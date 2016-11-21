@@ -8,7 +8,8 @@ from pandas.tseries.offsets import BDay
 from bokeh.io import show, output_file,save
 from pandas_datareader import data, wb
 import pandas_datareader.data as web
-
+from stocksite import settings
+from sqlalchemy import create_engine
 
 
 def getname(li):
@@ -46,10 +47,10 @@ def process_strategy(allotment, stockslist):
     df_historical = df.to_frame()
 
     #get latest quote
-    df_today = web.get_quote_yahoo(stockslist)
+    # df_today = web.get_quote_yahoo(stockslist)
 
     #get stock names
-    df_info = getname(stockslist)
+    # df_info = getname(stockslist)
 
     # calculating shares acquired on Day1
     num_shares = getnumshares(stockslist, str(startdate), df_historical, singlestock)
@@ -80,6 +81,64 @@ def process_strategy(allotment, stockslist):
 def gettoday_price(stockslist):
     df_today = web.get_quote_yahoo(stockslist)
     return df_today
+
+def stockprice_todb():
+    fullstocklist = ['TSLA',
+ 'PBW',
+ 'SCTY',
+ 'AAPL',
+ 'CRM',
+ 'TWLO',
+ 'NVDA',
+ 'FB',
+ 'XOM',
+ 'COST',
+ 'HD',
+ 'AMZN',
+ 'MSFT',
+ 'NFLX',
+ 'DIS',
+ 'SPY',
+ 'VTI',
+ 'VWO',
+ 'VBR']
+    enddate = datetime.datetime.now().date() - BDay(1)
+    startdate = enddate - BDay(4)
+    df = web.DataReader(fullstocklist, 'yahoo', enddate - BDay(4), enddate)
+    df_historical = df.to_frame()
+    df_historical = df_historical.reset_index()
+    df_historical.rename(columns={'minor': 'ticker', 'Date': 'date', 'Adj Close': 'close', 'Volume': 'volume'},
+                         inplace=True)
+    df_sqlready = df_historical[['date', 'ticker', 'volume', 'close']]
+    user = settings.DATABASES['default']['USER']
+    password = settings.DATABASES['default']['PASSWORD']
+    database_name = settings.DATABASES['default']['NAME']
+    database_url = 'mysql://{user}:{password}@localhost/{database_name}'.format(
+        user=user,
+        password=password,
+        database_name=database_name,
+    )
+    engine = create_engine(database_url, echo=False)
+    df_sqlready.to_sql('stockportfolio_historical', con=engine, if_exists='replace')
+
+
+from django.db import connection
+
+def check_db():
+    try:
+        query = 'SELECT date from stockportfolio_historical order by date desc limit 1'
+        with connection.cursor() as c:
+            c.execute(query)
+            latestdate = c.fetchall()
+        enddate = datetime.datetime.now().date() - BDay(1)
+        if latestdate[0][0].date() == enddate.date() :
+            return 'Stock historical data is up-to-date'
+        else:
+            stockprice_todb()
+            return 'Updating datebase'
+    except:
+        stockprice_todb()
+        return 'Updating datebase'
 
 
 

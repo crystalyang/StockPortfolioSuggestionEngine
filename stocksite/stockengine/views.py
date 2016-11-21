@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from django import forms
 from django.template import loader
-from task import process_strategy, gettoday_price
+from task import process_strategy, gettoday_price, check_db
 
 # Create your views here.
 
@@ -37,32 +37,12 @@ def portfolio(request):
                 print div
         return render(request, 'result.html', {'the_script':script, 'the_div':div})
 
-        return render(request, 'result.html', {'data':data})
 
     return render(request,'base.html', {'form':form})
 
 
-def Cal(request):
-    form = simpleform()
-    if request.POST:
-        form = simpleform(request.POST)
-        if form.is_valid():
-            params = request.POST.copy()
-            intkeys = params.keys()
-            for key in intkeys:
-                if params[key].isdigit():
-                    params[key] = int(params[key])
-            proceeds = params['allotment'] * params['finalprice']
-            totalpurchaseprice = params['allotment'] * params['iniprice']
-            buycom = params['bcommission']
-            selcom = params['scommission']
+def refresh(request):
+    msg = check_db()
+    form = selectionform()
+    return render(request, 'base.html', {'msg':msg, 'form':form})
 
-            capgaintax = (params['tax']/100.0)*(params['finalprice']*params['allotment'] - totalpurchaseprice - buycom - selcom)
-            cost = totalpurchaseprice + buycom + selcom + capgaintax
-            netprofit = proceeds - cost
-            roi = round(netprofit/float(cost),4)*100
-            breakeven = (totalpurchaseprice + buycom + selcom)/float(params['allotment'])
-
-            return render(request, 'result.html',{'proceeds':proceeds, 'cost':"{:,}".format(cost), 'purchase_price':"{:,}".format(totalpurchaseprice), 'buycom':buycom, 'selcom':selcom, 'tax':"{:,}".format(capgaintax), 'netprofit':"{:,}".format(netprofit), 'roi':roi, 'breakeven':breakeven,'allotment':params['allotment'],
-                                                  'bprice':params['iniprice'], 'taxbasis':(params['finalprice']*params['allotment'] - totalpurchaseprice - buycom - selcom), 'taxrate':params['tax']})
-    return render(request, 'base.html', {'form':form})
