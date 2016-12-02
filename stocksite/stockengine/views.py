@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from django import forms
 from django.template import loader
-from task import process_strategy, gettoday_price, check_db
+from task import process_strategy, gettoday_price, check_db, draw_portfoliochart, draw_piechart
 
 # Create your views here.
 
@@ -11,7 +11,7 @@ def test(request):
 	return HttpResponse("Hello, world")
 
 Portfolio_strategies=(('ethical','Ethical Investing'),('growth','Growth Investing'),('index','Index Investing'),('quality','Quality Investing'),('value','Value Investing'))
-Stocks = {'ethical':['TSLA','PBW','SCTY','AAPL'], 'growth':['CRM','TWLO','NVDA'], 'index':['SPY','VTI','VWO','VBR'], 'quality':['FB', 'XOM','COST','HD'],'value':['AMZN','MSFT','NFLX','DIS']}
+Stocks = {'ethical':['TSLA','PBW','AAPL'], 'growth':['CRM','TWLO','NVDA'], 'index':['SPY','VTI','VWO','VBR'], 'quality':['FB', 'XOM','COST','HD'],'value':['AMZN','MSFT','NFLX','DIS']}
 class selectionform(forms.Form):
     strategies = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=True, choices=Portfolio_strategies, help_text='Please select investment strategy')
     # strategies = forms.ChoiceField(required=True, choices=Portfolio_strategies)
@@ -30,12 +30,12 @@ def portfolio(request):
             stocklist =[]
             for i in choice:
                 stocklist += Stocks[i]
-            # data = gettoday_price(stocklist)
-            # data = data.to_html()
-                script, div = process_strategy(allotment, stocklist)
-                print script
-                print div
-        return render(request, 'result.html', {'the_script':script, 'the_div':div})
+                df_allocation, df_portfolio, tablehtml = process_strategy(allotment, stocklist)
+                script, div = draw_portfoliochart(df_portfolio)
+                piescript, piediv =draw_piechart(df_allocation)
+
+
+        return render(request, 'result.html', {'the_script':script, 'the_div':div, 'stocktable':tablehtml, 'pie_script':piescript, 'pie_div':piediv})
 
 
     return render(request,'base.html', {'form':form})
