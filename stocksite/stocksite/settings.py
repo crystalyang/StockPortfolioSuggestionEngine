@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'stocksite.wsgi.application'
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'slocal',
+    #     'NAME': 'test',
     #     'USER': 'root',
-    #     'PASSWORD':'csanalytics',
+    #     'PASSWORD':'123',
     #     'HOST':'localhost',
     # }
 }
