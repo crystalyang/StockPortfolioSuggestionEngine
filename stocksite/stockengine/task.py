@@ -135,13 +135,30 @@ from bokeh.models import DatetimeTickFormatter, NumeralTickFormatter
 from bokeh.embed import components
 from bokeh.charts import Donut, show, output_file
 def draw_portfoliochart(df_values):
-
-
+    #calculate change column
+    df_values['DOD Change'] = df_values['totalvalue'].pct_change()
+    df_values['change'] = df_values['DOD Change'].map('{:.2%}'.format)
     max = df_values.totalvalue.max() + df_values.totalvalue.std()
     min = df_values.totalvalue.min() - df_values.totalvalue.std()
-    p = figure(plot_width=500, plot_height=300, x_axis_type="datetime", y_range=(min, max),
-               title="Portfolio Total Value trend")
-    p.line(df_values['Date'], df_values['totalvalue'], line_width=3)
+    value = list(df_values.totalvalue)
+    change = list(df_values.change)
+    date = list(df_values.Date)
+    source = ColumnDataSource(data=dict(
+        x=date,
+        y=value,
+        change=change,
+    ))
+    hover = HoverTool(
+        tooltips=[
+            ("Value", "@y{$1.11}"),
+            ("Change vs Previous day", "@change"),
+        ]
+    )
+    TOOLS = 'box_zoom,box_select,resize,reset'
+    p = figure(plot_width=500, plot_height=300, x_axis_type="datetime", y_range=(min, max), tools=[hover, TOOLS])
+    p.circle('x', 'y', size=15, source=source)
+    p.line('x', 'y', line_width=3, source=source)
+
     p.yaxis[0].formatter = NumeralTickFormatter(format="$0.00")
     p.xaxis.axis_label = 'Date'
     p.yaxis.axis_label = 'Total value'
@@ -149,10 +166,11 @@ def draw_portfoliochart(df_values):
     return script, div
 
 def draw_piechart(df_allocation):
-    d = figure(plot_width=500, plot_height=300,
-               title="Portfolio Allocation")
-    d = Donut(df_allocation, label=['Stocks'], values='Allocation',
-              text_font_size='8pt', hover_text='medal_count')
+    TOOLS = 'box_zoom,box_select,resize,reset'
+    df_allocation['percent'] = ['{:0.2%}'.format(a / sum(df_allocation['Allocation'])) for a in
+                                df_allocation['Allocation']]
+    d = Donut(df_allocation, label=['Stocks', 'percent'], values='Allocation',
+              text_font_size='8pt', hover_text='Allocation', tools=TOOLS)
     script, div = components(d)
     return script, div
 
