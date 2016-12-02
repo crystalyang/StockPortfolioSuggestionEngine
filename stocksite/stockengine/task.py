@@ -121,7 +121,7 @@ def stock_htmltable(stockallocation, stockslist):
     df_stockinfo = pd.DataFrame(stockinfo)
     df_stocktoday = df_stocktoday.join(df_stockinfo, how='left')
     df_stocktodayhtml = df_stocktoday[['PE', 'last', 'time', 'Allocation', 'allocation_ratio', 'exchange', 'name']]
-    df_stocktodayhtml.columns = ['PE', 'Latest Price', 'Last Quote Time', 'Holdings Value', 'Holdings ratio',
+    df_stocktodayhtml.columns = ['PE', 'Latest Price', 'Last Quote Time(EST)', 'Holdings Value', 'Holdings ratio',
                                  'Exchange', 'Company Name']
     stocktable = df_stocktodayhtml.to_html(formatters={'Latest Price':'${:,.2f}'.format, 'Holdings Value':'${:,.2f}'.format, 'Holdings ratio':'{:,.2%}'.format})
     return stocktable

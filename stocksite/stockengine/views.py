@@ -21,22 +21,24 @@ class selectionform(forms.Form):
 def portfolio(request):
     form = selectionform()
     if request.POST:
-        form = selectionform(request.POST)
-        if form.is_valid():
-            params = request.POST.copy()
-            allotment = float(params['allotment'])
-            choice = params.getlist('strategies')
-            #choice represents the investment strategies selected
-            stocklist =[]
-            for i in choice:
-                stocklist += Stocks[i]
-                df_allocation, df_portfolio, tablehtml = process_strategy(allotment, stocklist)
-                script, div = draw_portfoliochart(df_portfolio)
-                piescript, piediv =draw_piechart(df_allocation)
+        try:
+            form = selectionform(request.POST)
+            if form.is_valid():
+                params = request.POST.copy()
+                allotment = float(params['allotment'])
+                choice = params.getlist('strategies')
+                #choice represents the investment strategies selected
+                stocklist =[]
+                for i in choice:
+                    stocklist += Stocks[i]
+                    df_allocation, df_portfolio, tablehtml = process_strategy(allotment, stocklist)
+                    script, div = draw_portfoliochart(df_portfolio)
+                    piescript, piediv =draw_piechart(df_allocation)
 
 
-        return render(request, 'result.html', {'the_script':script, 'the_div':div, 'stocktable':tablehtml, 'pie_script':piescript, 'pie_div':piediv})
-
+            return render(request, 'result.html', {'the_script':script, 'the_div':div, 'stocktable':tablehtml, 'pie_script':piescript, 'pie_div':piediv})
+        except:
+            return render(request,'error.html')
 
     return render(request,'base.html', {'form':form})
 
