@@ -76,13 +76,13 @@ WSGI_APPLICATION = 'stocksite.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'slocal',
-        'USER': 'root',
-        'PASSWORD':'csanalytics',
-        'HOST':'localhost',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'slocal',
+    #     'USER': 'root',
+    #     'PASSWORD':'csanalytics',
+    #     'HOST':'localhost',
+    # }
 }
 
 
