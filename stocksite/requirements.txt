@@ -60,7 +60,6 @@ meld3==0.6.10
 mistune==0.7.3
 mock==1.0.1
 more-itertools==2.3
-MySQL-python==1.2.5
 nbconvert==4.2.0
 nbformat==4.1.0
 ndg-httpsclient==0.4.2
@@ -96,7 +95,6 @@ pytz==2015.4
 PyYAML==3.10
 pyzmq==16.0.0
 qtconsole==4.2.1
-Quandl==3.0.1
 requests==2.12.0
 requests-file==1.4.1
 rpy2==2.5.2
@@ -120,4 +118,4 @@ wcwidth==0.1.7
 widgetsnbextension==1.2.6
 XlsxWriter==0.5.6
 xlwt==0.7.5
-yahoo-finance==1.4.0
+

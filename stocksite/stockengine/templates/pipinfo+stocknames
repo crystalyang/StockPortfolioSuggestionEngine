@@ -1,3 +1,14 @@
+main pythong library used:
+Django
+pandas
+pandas-datareader
+bokeh
+
+these can be installed by "pip install -r requirements.txt"
+
+
+
+
 {'exchange': {u'AAPL': u'NMS',
   u'AMZN': u'NMS',
   u'COST': u'NMS',
