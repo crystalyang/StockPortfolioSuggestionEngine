@@ -33,9 +33,10 @@ def portfolio(request):
                 df_allocation, df_portfolio, tablehtml = process_strategy(allotment, stocklist)
                 script, div = draw_portfoliochart(df_portfolio)
                 piescript, piediv =draw_piechart(df_allocation)
+                stocks = list(df_allocation['Stocks'])
 
 
-        return render(request, 'result.html', {'the_script':script, 'the_div':div, 'stocktable':tablehtml, 'pie_script':piescript, 'pie_div':piediv})
+        return render(request, 'result.html', {'the_script':script, 'the_div':div, 'stocktable':tablehtml, 'pie_script':piescript, 'pie_div':piediv, 'stocks':stocks, 'amount':allotment})
 
 
     return render(request,'base.html', {'form':form})
