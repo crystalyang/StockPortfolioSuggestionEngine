@@ -44,18 +44,18 @@
 
                         {% for item in form %}
                             <div class=" row">
-                                <div class="col-md-3 col-xs-3 text-right">
+                                <div class="col-md-5 col-xs-5 text-right">
                                     <span>{{ item.label }}</span>
 
                                 </div>
 
-                                <div class="col-md-3 col-xs-3">
+                                <div class="col-md-6 col-xs-6">
                                     {{item}}
 
                                 </div>
-                                <div class="col-md-3 col-xs-3 text-left">
-                                    <span> {{ item.help_text }}</span>
-                                </div>
+{#                                <div class="col-md-3 col-xs-3 text-left">#}
+{#                                    <span> {{ item.help_text }}</span>#}
+{#                                </div>#}
                             </div>
                         {% endfor %}
                         <div class="row">
@@ -101,7 +101,7 @@
 
     .panel {
         max-width:100%;
-        text-align:center;
+        text-align:left;
         padding:0.4em 2em;
         margin:0 auto;
     }
